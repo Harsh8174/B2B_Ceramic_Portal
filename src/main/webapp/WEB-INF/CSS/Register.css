@@ -1,0 +1,462 @@
+@charset "UTF-8";
+
+
+    
+
+        /* ================= RESET ================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                         "Segoe UI", sans-serif;
+            background: #f8fafc;
+            color: #1f2937;
+            line-height: 1.5;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+
+        /* ================= REGISTER SECTION ================= */
+
+        .register-section {
+            min-height: calc(100vh - 70px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 16px;
+            background: linear-gradient(
+                135deg,
+                #eff6ff,
+                #ffffff
+            );
+        }
+
+        .register-card {
+            width: 100%;
+            max-width: 560px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+
+        /* ================= REGISTER HEADER ================= */
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .register-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .register-header p {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+
+        /* ================= STEP PROGRESS ================= */
+
+        .step-progress {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+
+        .step-progress .dot {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .step-progress .bar {
+            width: 34px;
+            height: 2px;
+            background: #e5e7eb;
+        }
+
+        .step-progress .dot.active,
+        .step-progress .dot.done {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .step-progress .bar.done {
+            background: #2563eb;
+        }
+
+
+        /* ================= STEP PANELS ================= */
+
+        .step-panel {
+            display: none;
+        }
+
+        .step-panel.active {
+            display: block;
+        }
+
+
+        /* ================= ACCOUNT TYPE CARDS ================= */
+
+        .type-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .type-card {
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            padding: 18px 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .type-card:hover {
+            border-color: #93c5fd;
+        }
+
+        .type-card.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .type-card .icon {
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .type-card .label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .type-card .desc {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .sub-choice {
+            display: none;
+            margin-bottom: 18px;
+        }
+
+        .sub-choice.visible {
+            display: block;
+        }
+
+        .sub-choice .heading {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 10px;
+        }
+
+        .radio-row {
+            display: flex;
+            gap: 14px;
+        }
+
+        .radio-option {
+            flex: 1;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #374151;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .radio-option:hover {
+            border-color: #93c5fd;
+        }
+
+        .radio-option.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .radio-option input {
+            width: 15px;
+            height: 15px;
+        }
+
+
+        /* ================= FORM ================= */
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 7px;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 44px;
+            padding: 0 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: #ffffff;
+            font-size: 14px;
+            color: #1f2937;
+            outline: none;
+            transition: border-color 0.2s ease,
+                        box-shadow 0.2s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+        }
+
+        .form-group input.field-error {
+            border-color: #dc2626;
+        }
+
+        .field-msg {
+            font-size: 12px;
+            margin-top: 6px;
+            min-height: 14px;
+        }
+
+        .field-msg.error { color: #dc2626; }
+        .field-msg.success { color: #059669; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+
+        /* ================= VERIFY EMAIL ROW ================= */
+
+        .verify-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .verify-row input {
+            flex: 1;
+        }
+
+        .verify-btn {
+            flex-shrink: 0;
+            height: 44px;
+            padding: 0 16px;
+            border: 1px solid #2563eb;
+            background: #ffffff;
+            color: #2563eb;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .verify-btn:hover:not(:disabled) {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .verify-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        .verify-btn.verified {
+            background: #059669;
+            border-color: #059669;
+            color: #ffffff;
+            cursor: default;
+        }
+
+        .otp-block {
+            display: none;
+            margin-top: 12px;
+        }
+
+        .otp-block.visible {
+            display: flex;
+            gap: 10px;
+        }
+
+        .otp-block input {
+            flex: 1;
+            letter-spacing: 2px;
+        }
+
+
+        /* ================= CHECKBOX ================= */
+
+        .terms {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin: 8px 0 20px;
+        }
+
+        .terms input {
+            margin-top: 4px;
+            width: 15px;
+            height: 15px;
+        }
+
+        .terms label {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .terms a {
+            color: #2563eb;
+        }
+
+
+        /* ================= BUTTONS ================= */
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .register-btn,
+        .back-btn {
+            height: 44px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .register-btn {
+            flex: 1;
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+        }
+
+        .register-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .register-btn:disabled {
+            background: #93c5fd;
+            cursor: not-allowed;
+        }
+
+        .back-btn {
+            flex: 0 0 110px;
+            background: #ffffff;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .back-btn:hover {
+            border-color: #9ca3af;
+        }
+
+
+        /* ================= LOGIN LINK ================= */
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .login-link a {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+
+        /* ================= FOOTER ================= */
+
+        footer {
+            background: #ffffff;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            padding: 18px 0;
+        }
+
+        footer p {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 640px) {
+
+            .register-section {
+                padding: 30px 16px;
+            }
+
+            .register-card {
+                padding: 24px 20px;
+            }
+
+            .register-header h1 {
+                font-size: 24px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .type-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .radio-row {
+                flex-direction: column;
+            }
+        }
+
+
