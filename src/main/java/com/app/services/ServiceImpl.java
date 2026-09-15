@@ -2,6 +2,7 @@ package com.app.services;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -20,10 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.app.dao.BuyerDao;
+import com.app.dao.BuyerBusinessDao;
 import com.app.dao.Companydao;
 import com.app.dao.Dao;
+import com.app.dao.OrderDao;
+import com.app.model.Buyer_Business;
 import com.app.model.Buyer_Individual;
 import com.app.model.Company;
+import com.app.model.Order;
 import com.app.model.Product;
 import com.app.model.Product_Image;
 import com.app.model.Seller;
@@ -37,6 +42,10 @@ public class ServiceImpl implements Service {
 	private Companydao companydao;
 	@Autowired
 	private BuyerDao buyerdao;
+	@Autowired
+	private BuyerBusinessDao buyerBusinessDao;
+	@Autowired
+	private OrderDao orderDao;
 	
 	public void setSellerdao(Dao sellerdao) {
 		this.sellerdao = sellerdao;
@@ -48,6 +57,14 @@ public class ServiceImpl implements Service {
 	
 	public void setBuyerdao(BuyerDao buyerdao) {
 		this.buyerdao = buyerdao;
+	}
+	
+	public void setBuyerBusinessDao(BuyerBusinessDao buyerBusinessDao) {
+		this.buyerBusinessDao = buyerBusinessDao;
+	}
+	
+	public void setOrderDao(OrderDao orderDao) {
+		this.orderDao = orderDao;
 	}
 
 	@Override
@@ -151,15 +168,8 @@ public class ServiceImpl implements Service {
 		     
 		     product.setProduct_image_name(list_image);
 		     Iterator<Product_Image> imlr=list_image.iterator();
-//		     while(imlr.hasNext()) {
-//		    	product_img=imlr.next();
-//		    	product_img.setProduct(product);
-//		    	companydao.addProductimage(product_img);
-//		     }
 		     status =companydao.addProduct(product);
 		    
-		     
-	 		  
 		     return status;
 	}  
 	    
@@ -184,12 +194,12 @@ public class ServiceImpl implements Service {
 	        List<Product_Image> database_file =companydao.getProductsallImages(product);
 	        Iterator<MultipartFile> itr=uploaded_file.iterator(); 
 	        int total_size=6;
-            int current_size=database_file.size();
-            int index=0;
-            System.out.println(path);
-            File file;
-            FileOutputStream fro;
-            byte b[];
+             int current_size=database_file.size();
+             int index=0;
+             System.out.println(path);
+             File file;
+             FileOutputStream fro;
+             byte b[];
 	        while(itr.hasNext()) {
 		        MultipartFile obj=itr.next();
 		        String file_name =  obj.getOriginalFilename();
@@ -236,7 +246,6 @@ public class ServiceImpl implements Service {
 	    	   Product product= companydao.getProductById(product_id); 
 	    	    List<Product_Image> list= companydao.getProductsallImages(product); 
 	    	    boolean status=false;
-	    	    //String path="F:\\Ceramic_B2B_Portal\\Ceramic_B2B_Project\\src\\main\\webapp\\Seller_upload_images\\";
 	            for (Product_Image product_Image : list) {
 	            	System.out.println(path+product_Image.getProduct_image_name());
 	            	  File file=new File(path+product_Image.getProduct_image_name());
@@ -250,13 +259,11 @@ public class ServiceImpl implements Service {
 	    
 	    @Override
 	    public String insertbuyer(Buyer_Individual buyer) {
-	    	
 	    	return buyerdao.inserbuyer(buyer);
 	    }
 	    
 	    @Override
 	    public List<Product> getallProducts() {
-	    	
 	    	return companydao.getallProducts();
 	    }
 	    
@@ -267,25 +274,8 @@ public class ServiceImpl implements Service {
 	    int i=0;
 	    for (Product product2 : list) {
 	    	i++;
-//	    	System.out.println("iteration1:"+i);
-//	    	 System.out.println(product.getProduct_finish());
-//	 	    System.out.println(product2.getProduct_finish());
-//	 	    System.out.println(product.getProduct_category());
-//	 	    System.out.println(product2.getProduct_category());
-//	 	    System.out.println(product.getProduct_size());
-//	 	    System.out.println(product2.getProduct_size());
-//	 	    System.out.println(product.getProduct_material());
-//	 	    System.out.println(product2.getProduct_material());
-//	 	    System.out.println(seller_type);
-//	 	    System.out.println(product2.getCompany().getSeller().getSeller_type());
-//	 	   // System.out.println(product2.getCompany().getSeller().getSeller_type().equals(product.getCompany().getSeller().getSeller_type()));
 	 	    
 		if(seller_type.equalsIgnoreCase("all")) {
-			System.out.println(product2.getProduct_category().equals(product.getProduct_category()) 
-				&& product2.getProduct_material().equals(product.getProduct_material())
-				&& product2.getProduct_size().equalsIgnoreCase(product.getProduct_size())
-			    && 	product2.getProduct_finish().equals(product.getProduct_finish())
-			     );
 	    	if(product2.getProduct_category().equals(product.getProduct_category()) 
 				 && product2.getProduct_material().equals(product.getProduct_material())
 				 && product2.getProduct_size().equalsIgnoreCase(product.getProduct_size())
@@ -308,9 +298,65 @@ public class ServiceImpl implements Service {
 	    
 	    @Override
 	    public Buyer_Individual getbuyer(Buyer_Individual buyer) {
-	    
 	    	return buyerdao.getbuyer(buyer);
+	    }
+	    
+	    // Business Buyer Methods
+	    @Override
+	    public String insertBuyerBusiness(Buyer_Business buyer) {
+	    	return buyerBusinessDao.insertBuyerBusiness(buyer);
+	    }
+	    
+	    @Override
+	    public Buyer_Business getBuyerBusiness(Buyer_Business buyer) {
+	    	return buyerBusinessDao.getBuyerBusiness(buyer);
+	    }
+	    
+	    @Override
+	    public List<Buyer_Business> getAllBusinessBuyers() {
+	    	return buyerBusinessDao.getAllBuyerBusiness();
+	    }
+	    
+	    // Order Methods
+	    @Override
+	    public String createOrder(Order order) {
+	    	order.setOrder_date(LocalDateTime.now());
+	    	order.setOrder_status("PENDING");
+	    	return orderDao.createOrder(order);
+	    }
+	    
+	    @Override
+	    public Order getOrderById(int order_id) {
+	    	return orderDao.getOrderById(order_id);
+	    }
+	    
+	    @Override
+	    public List<Order> getOrdersByBuyer(int buyer_id) {
+	    	return orderDao.getOrdersByBuyerId(buyer_id);
+	    }
+	    
+	    @Override
+	    public List<Order> getOrdersByBusinessBuyer(int buyer_business_id) {
+	    	return orderDao.getOrdersByBusinessBuyerId(buyer_business_id);
+	    }
+	    
+	    @Override
+	    public String updateOrderStatus(int order_id, String status) {
+	    	Order order = orderDao.getOrderById(order_id);
+	    	if(order != null) {
+	    		order.setOrder_status(status);
+	    		return orderDao.updateOrder(order);
 	    	}
-	      }
-
-
+	    	return "failure";
+	    }
+	    
+	    @Override
+	    public void deleteOrder(int order_id) {
+	    	orderDao.deleteOrder(order_id);
+	    }
+	    
+	    @Override
+	    public List<Order> getAllOrders() {
+	    	return orderDao.getAllOrders();
+	    }
+}
