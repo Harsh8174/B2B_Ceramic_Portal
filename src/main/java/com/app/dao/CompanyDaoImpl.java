@@ -18,7 +18,7 @@ public class CompanyDaoImpl implements Companydao {
 		this.hibernateTemplate = hibernateTemplate;
 	}
 
-	@Transactional
+	@Transactional(readOnly = false)
 	@Override
 	public String addProduct(Product product) {
 	    try {
@@ -116,5 +116,46 @@ public class CompanyDaoImpl implements Companydao {
     	
     	hibernateTemplate.saveOrUpdate(product_img);
     	
+    }
+    @Transactional(readOnly = false)
+    @Override
+    public void deleteProductimage(Product_Image product_img) {
+    	hibernateTemplate.delete(product_img);
+    	
+    }
+    @Transactional(readOnly = false)
+    @Override
+    public void deleteproduct(Product product) {
+    	hibernateTemplate.delete(product);
+    }
+    
+    @Override
+    public List<Product> getallProducts() {
+
+        String hql = "from Product";
+
+        List<Product> list_product =
+                (List<Product>) hibernateTemplate.find(hql);
+
+        for (Product p : list_product) {
+
+            String hql_img =
+                    "from Product_Image pi " +
+                    "where pi.product.product_id = :product_id";
+             
+            List<Product_Image> images =
+                    (List<Product_Image>) hibernateTemplate.findByNamedParam(
+                            hql_img,
+                            "product_id",
+                            p.getProduct_id()
+                    );
+
+            p.setProduct_image_name(images);
+        
+          Company company=hibernateTemplate.get(Company.class, p.getCompany().getCompany_id());
+          p.setCompany(company);
+        }
+
+        return list_product;
     }
 }

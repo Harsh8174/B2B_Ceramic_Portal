@@ -54,8 +54,7 @@ public class Product {
     private List<MultipartFile> product_file;
     
     
-    @OneToMany(mappedBy = "product")
-    @Transient
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)
     private List<Product_Image> product_image_name;
 	
     @ManyToOne

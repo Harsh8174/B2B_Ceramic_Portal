@@ -20,10 +20,8 @@
 <mvc:annotation-driven />
 <tx:annotation-driven />
 <mvc:resources mapping="/images/**" location="/images/" />
+<mvc:resources mapping="/Seller_upload_images/**" location="/Seller_upload_images/" />
 <mvc:resources mapping="/CSS/**" location="/WEB-INF/CSS/" />
-<mvc:resources
-    mapping="/Seller_upload_images/**"
-    location="/WEB-INF/Seller/Seller_upload_images/" />
 <bean name="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
 <property name="prefix" value="/WEB-INF/"/>
 <property name="suffix" value=".jsp"/>
@@ -67,6 +65,10 @@
  </bean>
  
  <bean id="companydao" class="com.app.dao.CompanyDaoImpl">
+ <property name="hibernateTemplate" ref="hibernateTemplate" />
+ </bean>
+ 
+ <bean id="buyerdaoimpl" class="com.app.dao.BuyerDaoImpl">
  <property name="hibernateTemplate" ref="hibernateTemplate" />
  </bean>
 </beans>

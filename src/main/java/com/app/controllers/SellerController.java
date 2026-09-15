@@ -61,7 +61,9 @@ public class SellerController {
 		services.sendOTP(email, sys_otp);
 		Seller s=new Seller();
 		s.setSeller_email(email);
+		
 		s=services.Get_Seller(s);
+		System.out.println(s);
         if(s!=null) {
         	return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Already Exist");
         }	
@@ -93,7 +95,7 @@ public class SellerController {
 	
 	@RequestMapping(value="createaccount" ,method = RequestMethod.POST)
 	public ModelAndView addUser(@RequestParam("name") String name,@RequestParam("email") String email,@RequestParam("mobile") String mobile,@RequestParam("password")
-	String password,@RequestParam("company_name") String company,
+	String password,@RequestParam("seller_type") String seller_type ,@RequestParam("company_name") String company,
 	@RequestParam("company_email") String companyEmail) {
 		
 		
@@ -102,6 +104,7 @@ public class SellerController {
     	s.setSeller_email(email);
     	s.setSeller_contact(Long.parseLong(mobile));
     	s.setSeller_password(password);
+        s.setSeller_type(seller_type);
 		Company c=new Company();
 		c.setCompany_name(company);
 		c.setCompany_email(companyEmail);
@@ -143,9 +146,10 @@ public class SellerController {
 		     Seller s=(Seller)session.getAttribute("Seller");
 		     Company c=s.getSeller_company();
 		     product.setCompany(c);   
+		     String uploadir=request.getServletContext().getRealPath("/Seller_upload_images/");
 		        //Seller s=(Seller)m.getAttribute("Seller");
              System.out.println(s);
-		     String status= services.addProduct(product);
+		     String status= services.addProduct(product,uploadir);
 		     System.out.println(status);
 		     List<Product>  products= services.getProducts(s);
 		     request.setAttribute("productList", products);
@@ -179,11 +183,24 @@ public class SellerController {
 	        return "Seller/Seller_Product_Edit";
 	    } 
 	    @RequestMapping(value = "products/update", method = RequestMethod.POST)
-	    public String updateProduct(@ModelAttribute Product product,HttpSession session) {
+	    public String updateProduct(@ModelAttribute Product product,HttpSession session,HttpServletRequest request) {
 	    	Seller s=(Seller)session.getAttribute("Seller");
-	    	services.updateProduct(product,s.getSeller_company().getCompany_id()); 
+	    	String uploadDirPath = request.getServletContext().getRealPath("/Seller_upload_images/");
+	    	services.updateProduct(product,s.getSeller_company().getCompany_id(),uploadDirPath); 
 	        return "redirect:/seller/products";
 	    }
+	    
+	    @RequestMapping("delete")
+	    public String deleteProduct(@RequestParam("id") int product_id,Model map,HttpSession session,HttpServletRequest request) {
+	    	String uploadDirPath = request.getServletContext().getRealPath("/Seller_upload_images/");
+	    	System.out.println("controller :"+uploadDirPath);
+	    	services.deleteproduct(product_id,uploadDirPath);
+	    	Seller s=(Seller)session.getAttribute("Seller");
+	    	List<Product>  product= services.getProducts(s);
+	    	map.addAttribute(product);
+	    	return "Seller/Seller_MyProducts";
+	    }
+	    
 	   }
 
      

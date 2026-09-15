@@ -29,6 +29,10 @@ private Seller seller;
 
 @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
 private List<Product> company_product;
+
+@OneToOne(mappedBy = "company")
+private Buyer_Business business;
+
 public int getCompany_id() {
 	return company_id;
 }
@@ -59,6 +63,14 @@ public List<Product> getCompany_product() {
 }
 public void setCompany_product(List<Product> company_product) {
 	this.company_product = company_product;
+}
+
+public Buyer_Business getBusiness() {
+	return business;
+}
+
+public void setBusiness(Buyer_Business business) {
+	this.business = business;
 }
 
 }

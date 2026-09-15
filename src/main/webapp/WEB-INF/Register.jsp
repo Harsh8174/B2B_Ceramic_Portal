@@ -113,11 +113,39 @@
                         <div class="field-msg" id="emailMsg"></div>
                     </div>
 
+                    <!--
+                        Seller Type field:
+                        - visible when userType === 'seller'
+                        - visible when userType === 'buyer' AND buyerCategory === 'business'
+                        - hidden when userType === 'buyer' AND buyerCategory === 'individual'
+                        Visibility is toggled by updateTypeFieldVisibility() in the script below,
+                        which runs whenever the account type or buyer category changes.
+                    -->
+                    <div class="form-group" id="sellerTypeWrap" style="display:none;">
+                        <label for="seller_type">Seller Type</label>
+                        <select id="seller_type" name="seller_type">
+                            <option value="">-- Select Seller Type --</option>
+                            <option value="manufacturer">Manufacturer</option>
+                            <option value="job_worker">Job Worker</option>
+                        </select>
+                       
+                        <div class="field-msg" id="sellerTypeMsg"></div>
+                    </div>
+                    <div class="form-group" id="buyerTypeWrap" style="display:none;">
+                     <select id="buyer_business_type" name="buyer_type" >
+                            <option value="">-- Select Seller Type --</option>
+                            <option value="Trader">Trader</option>
+                            <option value="Distributor">Distributor</option>
+                            <option value="Retailer">Retailer</option>
+                            <option value="wholesaler">wholesaler</option>
+                        </select>
+                        <div class="field-msg" id="sellerTypeMsg"></div>
+                    </div>
                     <div class="form-group">
                         <label for="mobile">Mobile Number</label>
                         <input type="tel" id="mobile" name="mobile" placeholder="Enter mobile number" required>
                     </div>
-
+                    
                     <div class="form-row">
                         <div class="form-group">
                             <label for="password">Password</label>
@@ -241,8 +269,41 @@
      } else if (state.userType === 'buyer' && state.buyerCategory === 'individual') {
          form.action = FORM_ACTIONS.buyerIndividual;
      }
+     
      // if userType is buyer but no category chosen yet, leave the
      // previous action in place until the sub-choice is made.
+ }
+
+
+ // ---------------- Seller Type field visibility ----------------
+ // Shown for: seller, and buyer+business.
+ // Hidden for: buyer+individual (and before any choice is made).
+ function updateTypeFieldVisibility() {
+     var show = computeIsBusinessFlow();
+     var wrap = document.getElementById('sellerTypeWrap'); 
+     var buyer_wrap=document.getElementById('buyerTypeWrap'); 
+     var select = document.getElementById('seller_type');
+     var select_business = document.getElementById('buyer_business_type'); 
+     if(state.userType === 'seller'){
+     wrap.style.display = show ? 'block' : 'none';
+     select.required = show;
+     select_business.display='none';
+     }
+     else if(state.userType === 'buyer' && state.buyerCategory === 'business'){
+    	 buyer_wrap.style.display = show ? 'block' : 'none';
+         select_business.required = show;
+         select_business.display=show ? 'block' : 'none';
+         select_business.required=show;
+         select.display='none';
+     }
+
+     if (!show) {
+         // clear any previously chosen value and its message when hidden
+         select.value = '';
+         document.getElementById('sellerTypeMsg').textContent = '';
+     }
+
+     evaluateStep2Button();
  }
 
 
@@ -260,6 +321,7 @@
          subChoice.classList.add('visible');
          // require the sub-choice before allowing continue
          state.buyerCategory = null;
+         document.getElementById('buyerCategory').value = '';
          document.getElementById('optBusiness').classList.remove('selected');
          document.getElementById('optIndividual').classList.remove('selected');
          document.getElementById('step1NextBtn').disabled = true;
@@ -271,6 +333,7 @@
      }
 
      updateFormAction();
+     updateTypeFieldVisibility();
  }
 
  function selectBuyerCategory(category) {
@@ -283,6 +346,7 @@
      document.getElementById('step1NextBtn').disabled = false;
 
      updateFormAction();
+     updateTypeFieldVisibility();
  }
 
  function computeIsBusinessFlow() {
@@ -320,6 +384,9 @@
          document.getElementById('step2ActionBtn').setAttribute(
              'type', state.isBusinessFlow ? 'button' : 'submit'
          );
+
+         // re-check seller type field visibility every time step 2 is (re)entered
+         updateTypeFieldVisibility();
      }
 
      document.querySelectorAll('.step-panel').forEach(function (panel) {
@@ -342,21 +409,19 @@
  }
 
 
- // ---------------- OTP endpoints ----------------
- // Adjust base paths to match your actual servlet mappings.
- var OTP_ENDPOINTS = {
-     seller: {
-         send: contextPath + '/seller/sendotp',
-         verify: contextPath + '/seller/verifyotp'
-     },
-     buyer: {
-         send: contextPath + '/buyer/sendotp',
-         verify: contextPath + '/buyer/verifyotp'
-     }
- };
-
+ // ---------------- OTP endpoints (computed fresh on every call) ----------------
  function getOtpEndpoints() {
-     return state.userType === 'seller' ? OTP_ENDPOINTS.seller : OTP_ENDPOINTS.buyer;
+     if (state.userType === 'seller') {
+         return {
+             send: contextPath + '/seller/sendotp',
+             verify: contextPath + '/seller/verifyotp'
+         };
+     }
+     // buyer — uses whatever state.buyerCategory is *right now*
+     return {
+         send: contextPath + '/buyer/' + state.buyerCategory + '/sendotp',
+         verify: contextPath + '/buyer/' + state.buyerCategory + '/verifyotp'
+     };
  }
 
  // ---------------- send OTP ----------------
@@ -401,31 +466,17 @@
 
  // ---------------- verify OTP ----------------
  function verifyOtp(fieldKey) {
-	 var name  =document.getElementById("name").value.trim();
-	 var mobile  =document.getElementById("mobile").value.trim();
-	 var confirmPassword  =document.getElementById("confirmPassword").value.trim()
-     var email = document.getElementById(fieldKey).value.trim();
-     var enteredOtp = document.getElementById(fieldKey + 'Otp').value.trim();
-     console.log("Mobile:", mobile);
+	 var enteredOtp = document.getElementById(fieldKey + 'Otp').value.trim();
+	 var email = document.getElementById(fieldKey).value.trim();
+	 var params = new URLSearchParams();
+     params.append('email',email);
+     params.append('otp', enteredOtp);
      if (!enteredOtp) {
          showMsg(fieldKey + 'Msg', 'Enter the code you received.', 'error');
          return;
      }
-     var company=document.getElementById("company").value.trim()
-     var companyEmail=document.getElementById("companyEmail").value.trim()
-     var params = new URLSearchParams();
-     params.append('email', email);
-     params.append('otp', enteredOtp);
-     params.append('name', name);
-     params.append('mobile', mobile);
-     params.append('password', confirmPassword);
-     params.append('company_name',company);
-     params.append('company_email',companyEmail);
-     console.log("name =", name);
-     console.log("mobile =", mobile);
-     console.log("password =", confirmPassword);
-     console.log("company =", company);
-     console.log("companyEmail =", companyEmail);
+     //console.log("company =", company);
+     //console.log("companyEmail =", companyEmail);
 
      console.log(params.toString());
      fetch(getOtpEndpoints().verify, {
@@ -526,8 +577,15 @@
      var confirmPassword = document.getElementById('confirmPassword').value;
      var termsOk = document.getElementById('termsStep2').checked || document.getElementById('termsStep3').checked;
 
+     // if the seller type field is currently visible, it must have a value
+     var sellerTypeWrap = document.getElementById('sellerTypeWrap');
+     var sellerTypeOk = true;
+     if (sellerTypeWrap.style.display !== 'none') {
+         sellerTypeOk = document.getElementById('seller_type').value.trim() !== '';
+     }
+
      var basicsOk = name && mobile && password && confirmPassword &&
-                    password === confirmPassword && state.emailVerified;
+                    password === confirmPassword && state.emailVerified && sellerTypeOk;
 
      var ready = state.isBusinessFlow ? basicsOk : (basicsOk && termsOk);
 
@@ -541,13 +599,16 @@
      var termsOk = document.getElementById('termsStep3').checked;
      var ready = company && state.companyEmailVerified && termsOk;
      document.getElementById('step3SubmitBtn').disabled = !ready;
-    
+     
+ 
+     
  }
 
  // live-check step 2 required text fields as the user types
  ['name', 'mobile'].forEach(function (id) {
      document.getElementById(id).addEventListener('input', evaluateStep2Button);
  });
+ document.getElementById('seller_type').addEventListener('change', evaluateStep2Button);
  document.getElementById('company').addEventListener('input', evaluateStep3Button);
 
 
@@ -559,7 +620,96 @@
      // when not a business flow, the button is type="submit" and the
      // form posts normally (see goToStep, which swaps the button type).
  }
-        
+ 
+ 
+ form.addEventListener("submit", function(event) {
+
+     // Get all values FIRST
+     var name = document.getElementById("name").value.trim();
+     var mobile = document.getElementById("mobile").value.trim();
+     var confirmPassword = document.getElementById("confirmPassword").value.trim();
+     var email = document.getElementById("email").value.trim();
+
+     var seller_type = document.getElementById("seller_type").value.trim();
+     var company = document.getElementById("company").value.trim();
+     var companyEmail = document.getElementById("companyEmail").value.trim();
+
+     // Remove previously added dynamic hidden fields
+     document.querySelectorAll(".dynamic-param").forEach(function(element) {
+         element.remove();
+     });
+
+     // Create hidden input
+     function addParam(name, value) {
+         var input = document.createElement("input");
+
+         input.type = "hidden";
+         input.name = name;
+         input.value = value;
+         input.classList.add("dynamic-param");
+
+         form.appendChild(input);
+     }
+
+
+     // ================= SELLER =================
+     if (state.userType === "seller") {
+
+         form.action = contextPath + "/seller/createaccount";
+
+         addParam("name", name);
+         addParam("mobile", mobile);
+         addParam("password", confirmPassword);
+         addParam("email", email);
+         addParam("seller_type", seller_type);
+         addParam("company_name", company);
+         addParam("company_email", companyEmail);
+
+         console.log("SELLER");
+     }
+
+
+     // ================= BUYER BUSINESS =================
+     else if (
+         state.userType === "buyer" &&
+         state.buyerCategory === "business"
+     ) {
+
+         form.action = contextPath + "/buyer/business/createaccount";
+
+         addParam("buyer_name", name);
+         addParam("buyer_contact", mobile);
+         addParam("buyer_password", confirmPassword);
+         addParam("buyer_email", email);
+         addParam("buyer_type", state.buyerCategory);
+         addParam("company_name", company);
+         addParam("company_email", companyEmail);
+
+         console.log("BUYER BUSINESS");
+     }
+
+
+     // ================= BUYER INDIVIDUAL =================
+     else if (
+         state.userType === "buyer" &&
+         state.buyerCategory === "individual"
+     ) {
+
+         form.action = contextPath + "/buyer/individual/createaccount";
+
+         addParam("buyer_name", name);
+         addParam("buyer_contact", mobile);
+         addParam("buyer_password", confirmPassword);
+         addParam("buyer_email", email);
+         addParam("buyer_type", state.buyerCategory);
+
+         console.log("BUYER INDIVIDUAL");
+     }
+
+     console.log("Final Form Action:", form.action);
+ });
+ 
+
     </script>
 
 </body>

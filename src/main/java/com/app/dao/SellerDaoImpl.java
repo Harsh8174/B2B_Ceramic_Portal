@@ -49,16 +49,21 @@ public class SellerDaoImpl implements Dao {
 		    
 		    while(itr.hasNext()) {
 		    	s=itr.next();
+		        
 		    }
-		    
-		 if(s.getSeller_password().equals(seller.getSeller_password())) {
-			 
-			 return s; 
-		 }   
-		 else {
-			 
-			 return null;
-		 }
+		    if(seller.getSeller_password()!=null) {
+		    	if(s.getSeller_password().equals(seller.getSeller_password())) {
+					 
+					 return s; 
+				 }   
+				 else {
+					 
+					 return null;
+				 }
+	        }else {
+	        	return s;
+	        } 	
+		 
 		}
 		else {
 			System.out.println("list empty");

@@ -295,7 +295,9 @@
             	 console.log(form.action);
              }
              else if(type==="buyer"){
-            	 
+            	 form.action=contextpath+ "/buyer/login";
+            	 document.getElementById('email').name="buyer_email";
+            	  document.getElementById('password').name="buyer_password";
              }
             //document.getElementById('userType').value = type;
             document.getElementById('toggleSeller').classList.toggle('active', type === 'seller');

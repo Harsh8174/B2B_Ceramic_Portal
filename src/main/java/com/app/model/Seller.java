@@ -25,6 +25,8 @@ private String seller_email;
 private long seller_contact;
 @Column(name="seller_password")
 private String seller_password;
+@Column(name="seller_type")
+private String seller_type;
 
 @OneToOne(cascade = CascadeType.ALL)
 @JoinColumn(name = "seller_company")
@@ -66,6 +68,12 @@ public Company getSeller_company() {
 }
 public void setSeller_company(Company seller_company) {
 	this.seller_company = seller_company;
+}
+public String getSeller_type() {
+	return seller_type;
+}
+public void setSeller_type(String seller_type) {
+	this.seller_type = seller_type;
 }
 
 

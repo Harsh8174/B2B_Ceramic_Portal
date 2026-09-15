@@ -11,9 +11,12 @@ public interface Companydao {
     public String addProduct(Product product);
     public String addProductimage(Product_Image product_img );
     public void updateProductimage(Product_Image product_img);
+    public void deleteProductimage(Product_Image product_img);
     public List<Product> getallProducts(int company_id);
-    public List<Product_Image> getProductsallImages(Product product_id);
+    public List<Product_Image> getProductsallImages(Product product);
     public Product getProductById(int product_id);
     public String  updateProduct(Product product);
     public Company getCompany(int company_id);
+    public void deleteproduct(Product product);
+    public List<Product> getallProducts();
 }

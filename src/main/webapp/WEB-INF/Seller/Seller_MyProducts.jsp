@@ -146,7 +146,7 @@
                          data-category="<%= category %>">
 
                         <div class="thumb">
-                            <span class="placeholder"><img id="card_img" src="<%= request.getContextPath() %>/Seller_upload_images/<%= img_name %>" /></span>
+                            <span class="placeholder"><img id="card_img" src="${pageContext.request.contextPath}/Seller_upload_images/<%= img_name %>" /></span>
                         </div>
 
                         <div class="body">
@@ -172,7 +172,7 @@
                                     Edit
                                 </a>
                                 <a class="delete-btn"
-                                   href="${pageContext.request.contextPath}/seller/products/delete?id=<%= p.getProduct_id() %>"
+                                   href="${pageContext.request.contextPath}/seller/delete?id=<%= p.getProduct_id() %>"
                                    onclick="return confirm('Delete this product? This can\'t be undone.');">
                                     Delete
                                 </a>
